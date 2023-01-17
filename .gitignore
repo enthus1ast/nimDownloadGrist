@@ -1,0 +1,3 @@
+src/backups/*
+*.exe
+config.ini

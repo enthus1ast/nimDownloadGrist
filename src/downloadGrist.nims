@@ -1,0 +1,5 @@
+switch("define", "release")
+switch("gc", "arc")
+switch("opt", "speed")
+switch("define", "lto")
+switch("passl", "-s")

@@ -23,3 +23,7 @@ Table2
 ```
 
 then run the downloadGrist executable.
+The downloaded files will have a timestamp,
+so its safe to run the tool over and over again.
+
+

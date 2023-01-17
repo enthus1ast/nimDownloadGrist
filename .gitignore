@@ -1,3 +1,4 @@
 src/backups/*
 *.exe
 config.ini
+releases

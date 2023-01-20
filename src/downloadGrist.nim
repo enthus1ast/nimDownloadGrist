@@ -1,6 +1,7 @@
 import parsecfg, strutils, strformat, os, tables
 import times
 import gristapi
+import formatja
 
 var config = loadConfig(getAppDir() / "config.ini")
 
@@ -10,8 +11,11 @@ var grist = newGristApi(
   apiKey = config.getSectionValue("common", "apiKey")
 )
 
-let documentName = config.getSectionValue("common", "documentName")
-let dateStr = ($now()).replace(":", "-")
+
+var replacer: Replacer = {
+  "documentName": config.getSectionValue("common", "documentName"),
+  "dateStr": ($now()).replace(":", "-")
+}.toTable
 
 let downloadDirConfig = config.getSectionValue("common", "downloadDir")
 let downloadDir =
@@ -22,13 +26,17 @@ if not dirExists(downloadDir):
 
 if config.getSectionValue("downloads", "downloadSQLITE").parseBool():
   let dataSqlite = grist.downloadSQLITE()
-  writeFile(downloadDir / fmt"{documentName}__{dateStr}.sqlite", dataSqlite)
+  let format = config.getSectionValue("downloads", "formatSQLITE")
+  writeFile(downloadDir / format(format, replacer), dataSqlite)
 
 if config.getSectionValue("downloads", "downloadXLSX").parseBool():
   let dataXLSX = grist.downloadXLSX()
-  writeFile(downloadDir / fmt"{documentName}__{dateStr}.xlsx", dataXLSX)
+  let format = config.getSectionValue("downloads", "formatXLSX")
+  writeFile(downloadDir / format(format, replacer), dataXLSX)
 
 if config.getSectionValue("downloads", "downloadCSV").parseBool():
+  let format = config.getSectionValue("downloads", "formatCSV")
   for csvtable in config["csvtables"].keys():
+    replacer["csvtable"] = csvtable
     let dataCSV = grist.downloadCSV(csvtable)
-    writeFile(downloadDir / fmt"{documentName}-{csvtable}__{dateStr}.csv", dataCSV)
+    writeFile(downloadDir / format(format, replacer), dataCSV)

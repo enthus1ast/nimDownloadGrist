@@ -9,6 +9,10 @@ server = "https://docs.getgrist.com/"
 docId = "myDocId"
 apiKey = "myApiKey"
 documentName = "myDocumentName"
+
+# where the backups are stored.
+# if `downloadDir` is a relative path, it will be relative
+# to the `gristDownload` executable.
 downloadDir = backups
 
 
@@ -16,6 +20,21 @@ downloadDir = backups
 downloadXLSX = true
 downloadSQLITE = true
 downloadCSV = true
+
+[format]
+# The format for the filename
+# Available placeholders:
+# {{documentName}}
+#   the name of the document that is downloaded
+#
+# {{dateStr}}
+#   the date string when the download has started
+#
+# {{csvtable}}
+#   the name of the csv table.
+formatSQLITE = "{{documentName}}__{{dateStr}}.sqlite"
+formatXLSX = "{{documentName}}__{{dateStr}}.xlsx"
+formatCSV = "{{documentName}}-{{csvtable}}__{{dateStr}}.csv"
 
 [csvtables]
 Table1
@@ -27,3 +46,8 @@ The downloaded files will have a timestamp,
 so its safe to run the tool over and over again.
 
 
+Changelog
+---------
+
+- v0.2.0 custom file name formatting.
+- v0.1.0 Init

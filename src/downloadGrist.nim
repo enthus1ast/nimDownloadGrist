@@ -26,16 +26,16 @@ if not dirExists(downloadDir):
 
 if config.getSectionValue("downloads", "downloadSQLITE").parseBool():
   let dataSqlite = grist.downloadSQLITE()
-  let format = config.getSectionValue("downloads", "formatSQLITE")
+  let format = config.getSectionValue("format", "formatSQLITE")
   writeFile(downloadDir / format(format, replacer), dataSqlite)
 
 if config.getSectionValue("downloads", "downloadXLSX").parseBool():
   let dataXLSX = grist.downloadXLSX()
-  let format = config.getSectionValue("downloads", "formatXLSX")
+  let format = config.getSectionValue("format", "formatXLSX")
   writeFile(downloadDir / format(format, replacer), dataXLSX)
 
 if config.getSectionValue("downloads", "downloadCSV").parseBool():
-  let format = config.getSectionValue("downloads", "formatCSV")
+  let format = config.getSectionValue("format", "formatCSV")
   for csvtable in config["csvtables"].keys():
     replacer["csvtable"] = csvtable
     let dataCSV = grist.downloadCSV(csvtable)

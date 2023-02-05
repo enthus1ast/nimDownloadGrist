@@ -51,5 +51,6 @@ so its safe to run the tool over and over again.
 Changelog
 ---------
 
-- v0.2.0 custom file name formatting.
+- v0.2.1 added csvtable readme
+- v0.2.0 custom file name formatting.jfkl
 - v0.1.0 Init

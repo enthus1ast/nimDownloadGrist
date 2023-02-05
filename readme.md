@@ -37,6 +37,8 @@ formatXLSX = "{{documentName}}__{{dateStr}}.xlsx"
 formatCSV = "{{documentName}}-{{csvtable}}__{{dateStr}}.csv"
 
 [csvtables]
+# List all the tables you want to download as csv here.
+# This section is ignored when you disable downloadCSV
 Table1
 Table2
 ```

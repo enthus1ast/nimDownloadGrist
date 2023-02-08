@@ -1,9 +1,3 @@
-This is a small stand alone tool to download
-documents from grist for periodically backup purpose.
-
-Change the config.ini accordingly:
-
-```ini
 [common]
 server = "https://docs.getgrist.com/"
 docId = "myDocId"
@@ -41,34 +35,7 @@ formatCSV = "{{documentName}}-{{csvtable}}__{{dateStr}}.csv"
 # This section is ignored when you disable downloadCSV
 Table1
 Table2
-```
-
-then run the downloadGrist executable.
-The downloaded files will have a timestamp,
-so its safe to run the tool over and over again.
 
 
-Changelog
----------
-UPCOMING
----
-- v?.?.?
 
 
-DONE
-----
-- v0.3.0
-  - Added logging
-  - Do not create files in case of an error.
-  - create config.ini in case its missing
-  - In case of an error the application quits with an return code of "1".
-  - Added linux builds
-    - amd64
-    - arm
-    - arm-linux-gnueabi
-    - arm-linux-gnueabihf
-
-
-- v0.2.1 added csvtable readme
-- v0.2.0 custom file name formatting.jfkl
-- v0.1.0 Init

@@ -1,4 +1,6 @@
 src/backups/*
 *.exe
 config.ini
+config.ini.in
 releases
+*.log

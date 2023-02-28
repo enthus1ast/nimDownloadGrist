@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.3.0"
+version       = "0.3.1"
 author        = "David Krause"
 description   = "Tool to backup grist documents"
 license       = "MIT"
@@ -13,10 +13,11 @@ bin           = @["nimGristDownload"]
 requires "nim >= 1.6.10"
 requires "https://github.com/enthus1ast/nimGristApi"
 requires "https://github.com/enthus1ast/formatja"
+requires "ziggcc"
 
 import formatja
 
-let crossCompileWithZig = """nim c --cpu:{{cpu}} --cc:clang --clang.exe="zigcc.cmd" --clang.linkerexe="zigcc.cmd" --passc:"-target {{target}}" --passl:"-target {{target}}" --forceBuild:on --os:{{os}} --opt:speed  --out:builds/downloadGrist_{{version}}_{{target}}{{ext}} src/downloadGrist.nim"""
+let crossCompileWithZig = """nim c -d:release -d:VERSION={{version}} --cpu:{{cpu}} --cc:clang --clang.exe="zigcc.cmd" --clang.linkerexe="zigcc.cmd" --passc:"-target {{target}}" --passl:"-target {{target}}" --forceBuild:on --os:{{os}} --opt:speed  --out:builds/downloadGrist_{{version}}_{{target}}{{ext}} src/downloadGrist.nim"""
 
 task win, "build for windows (default compiler)":
   exec "nim c -d:release --opt:speed --gc:arc -d:lto --passl:-s --out=releases/downloadGrist src/downloadGrist.nim"
@@ -45,6 +46,12 @@ task crossarm, "build from windows for linux arm (zig)":
     let cmd = format(crossCompileWithZig, {"target": target, "os": "linux", "cpu": "arm64", "version": version})
     echo cmd
     exec cmd
+
+task release, "build for all supported targets":
+  crosswindowsTask()
+  crosslinuxTask()
+  crossarmTask()
+
 
 ## If someone wants to build this on macos you must do it yourself, i cannot test it, do not own a mac,
 ## and i dont want to put effort in this as well,

@@ -4,7 +4,13 @@ import gristapi
 import formatja
 import std/logging
 
-const defaultConfigFile = staticRead("config.ini.in")
+const VERSION {.strdefine.} = "-1"
+
+func changeToPlatformNewlines(str: string): string =
+  for line in str.splitLines():
+    result.add line & "\p"
+
+const defaultConfigFile = staticRead("config.ini.in").changeToPlatformNewlines()
 
 var logfile = getAppDir() / "downloadGrist.log"
 open(logfile, fmWrite).close() # create the logfile
@@ -21,10 +27,12 @@ addHandler(rollingLog)
 let configPath = getAppDir() / "config.ini"
 
 if not fileExists(configPath):
-  warn "config.ini is missing, i'll create it for you"
+  warn "config.ini is missing, i'll create it for you! Quitting."
   writeFile(configPath, defaultConfigFile)
+  quit(1)
 
 var config = loadConfig(getAppDir() / "config.ini")
+# echo config
 
 var grist = newGristApi(
   server = config.getSectionValue("common", "server"),
@@ -33,10 +41,11 @@ var grist = newGristApi(
 )
 
 info(
-  format("Server: '{{server}}' docId: '{{docId}}' apiKey: '{{apiKey}}'", {
+  format("Version: {{version}} Server: '{{server}}' docId: '{{docId}}' apiKey: '{{apiKey}}'", {
     "server": $grist.server,
     "docId": $grist.docId,
-    "apiKey": $grist.apiKey
+    "apiKey": $grist.apiKey,
+    "version": VERSION
   }))
 
 if $grist.server == "" or grist.docId == "" or grist.apiKey == "":
@@ -77,7 +86,7 @@ if config.getSectionValue("downloads", "downloadXLSX").parseBool():
 if config.getSectionValue("downloads", "downloadCSV").parseBool():
   let format = config.getSectionValue("format", "formatCSV")
   for csvtable in config["csvtables"].keys():
-    info format("Download csv table: '{{csvtables}}'", {"csvtable": csvtable})
+    info format("Download csv table: '{{csvtable}}'", {"csvtable": csvtable})
     try:
       replacer["csvtable"] = csvtable
       let dataCSV = grist.downloadCSV(csvtable)

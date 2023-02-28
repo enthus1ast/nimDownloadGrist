@@ -13,6 +13,8 @@ documentName = "myDocumentName"
 # where the backups are stored.
 # if `downloadDir` is a relative path, it will be relative
 # to the `gristDownload` executable.
+# Please note: a windows path must be written in triple quotes:
+#  """C:\myBackupDir"""
 downloadDir = backups
 
 
@@ -57,6 +59,12 @@ UPCOMING
 
 DONE
 ----
+- v0.3.1
+  - Fixed bug that prevents v0.3.0 from running. (ApiKey always empty.)
+  - Use platform specific newline character in generated config.
+    - Older versions of Windows display the config config correct in notepad.
+  - Print Version in the logs
+  - Fixed bug that does not print csv tables in the log.
 - v0.3.0
   - Added logging
   - Do not create files in case of an error.

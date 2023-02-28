@@ -7,6 +7,8 @@ documentName = "myDocumentName"
 # where the backups are stored.
 # if `downloadDir` is a relative path, it will be relative
 # to the `gristDownload` executable.
+# Please note: a windows path must be written in triple quotes:
+#  """C:\myBackupDir"""
 downloadDir = backups
 
 

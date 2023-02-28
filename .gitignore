@@ -3,4 +3,6 @@ src/backups/*
 config.ini
 config.ini.in
 releases
+builds
 *.log
+Private*

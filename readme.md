@@ -41,8 +41,13 @@ formatCSV = "{{documentName}}-{{csvtable}}__{{dateStr}}.csv"
 [csvtables]
 # List all the tables you want to download as csv here.
 # This section is ignored when you disable downloadCSV
-Table1
-Table2
+# Wildcards are supported!
+#  `*` Fetches all tables as csv
+#  `MyTable*` Fetches all tables that start with "MyTable"
+#  `*Expanses*` Fetches all tables that contain the word `Expanses` in the name
+; Table1
+; Table2
+*
 ```
 
 then run the downloadGrist executable.
@@ -59,6 +64,11 @@ UPCOMING
 
 DONE
 ----
+- v0.3.2
+  - Added wildcard downloads to csv this means that for example::
+    - `*` Fetches all tables as csv
+    - `MyTable*` Fetches all tables that start with "MyTable"
+    - `*Expanses*` Fetches all tables that contain the word `Expanses` in the name
 - v0.3.1
   - Fixed bug that prevents v0.3.0 from running. (ApiKey always empty.)
   - Use platform specific newline character in generated config.

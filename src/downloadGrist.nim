@@ -1,8 +1,10 @@
-import parsecfg, strutils, strformat, os, tables, uri
+import parsecfg, strutils, strformat, os, tables, uri, sequtils
 import times
 import gristapi
 import formatja
+import glob
 import std/logging
+import sets
 
 const VERSION {.strdefine.} = "-1"
 
@@ -85,7 +87,37 @@ if config.getSectionValue("downloads", "downloadXLSX").parseBool():
 
 if config.getSectionValue("downloads", "downloadCSV").parseBool():
   let format = config.getSectionValue("format", "formatCSV")
-  for csvtable in config["csvtables"].keys():
+
+  # If the csvtables contains a wildcard, we have to first
+  # download a list of all tables, then match on them.
+
+  let anyHasGlob = toSeq(config["csvtables"].keys()).any(
+    proc (x: string): bool =
+      x.hasMagic()
+  )
+
+  var csvsToDownload: HashSet[string]
+  if anyHasGlob:
+    # At least one entry is a glob, get the table list.
+    var tableNames = grist.listTableNames()
+    for matcherStr in config["csvtables"].keys():
+      if not matcherStr.hasMagic():
+        # Not a glob, just add it
+        csvsToDownload.incl matcherStr
+      else:
+        # A glob, look through all tableName if the given glob matches.
+        let pattern = glob(matcherStr)
+        for tableName in tableNames:
+          if tableName.matches(pattern):
+            csvsToDownload.incl(tableName)
+  else:
+    # No entry is a glob, just add
+    for matcherStr in config["csvtables"].keys():
+      csvsToDownload.incl matcherStr
+
+
+
+  for csvtable in csvsToDownload:
     info format("Download csv table: '{{csvtable}}'", {"csvtable": csvtable})
     try:
       replacer["csvtable"] = csvtable

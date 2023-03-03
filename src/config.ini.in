@@ -1,8 +1,9 @@
 [common]
 server = "https://docs.getgrist.com/"
-docId = "myDocId"
-apiKey = "myApiKey"
-documentName = "myDocumentName"
+docId = ""
+apiKey = ""
+documentName = ""
+
 
 # where the backups are stored.
 # if `downloadDir` is a relative path, it will be relative
@@ -35,8 +36,13 @@ formatCSV = "{{documentName}}-{{csvtable}}__{{dateStr}}.csv"
 [csvtables]
 # List all the tables you want to download as csv here.
 # This section is ignored when you disable downloadCSV
-Table1
-Table2
+# Wildcards are supported!
+#  `*` Fetches all tables as csv
+#  `MyTable*` Fetches all tables that start with "MyTable"
+#  `*Expanses*` Fetches all tables that contain the word `Expanses` in the name
+; Table1
+; Table2
+*
 
 
 

@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.3.1"
+version       = "0.3.2"
 author        = "David Krause"
 description   = "Tool to backup grist documents"
 license       = "MIT"
@@ -13,6 +13,7 @@ bin           = @["nimGristDownload"]
 requires "nim >= 1.6.10"
 requires "https://github.com/enthus1ast/nimGristApi"
 requires "https://github.com/enthus1ast/formatja"
+requires "glob"
 requires "ziggcc"
 
 import formatja

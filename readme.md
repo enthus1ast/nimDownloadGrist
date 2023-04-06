@@ -59,6 +59,9 @@ UPCOMING
 
 DONE
 ----
+- v0.3.2
+  - fix nimble zigcc package
+  - fix nimble build -> renamed
 - v0.3.1
   - Fixed bug that prevents v0.3.0 from running. (ApiKey always empty.)
   - Use platform specific newline character in generated config.

@@ -1,8 +1,10 @@
-import parsecfg, strutils, strformat, os, tables, uri
+import parsecfg, strutils, strformat, os, tables, uri, sequtils
 import times
 import gristapi
 import formatja
+import glob
 import std/logging
+import sets
 
 const VERSION {.strdefine.} = "-1"
 
@@ -12,26 +14,35 @@ func changeToPlatformNewlines(str: string): string =
 
 const defaultConfigFile = staticRead("config.ini.in").changeToPlatformNewlines()
 
-var logfile = getAppDir() / "downloadGrist.log"
-open(logfile, fmWrite).close() # create the logfile
 
 var consoleLog = newConsoleLogger(fmtStr="[$time] - $levelname: ")
-var rollingLog = newRollingFileLogger(
-  logfile,
-  fmtStr = "[$time] - $levelname: ",
-  mode = fmReadWriteExisting
-)
 addHandler(consoleLog)
-addHandler(rollingLog)
 
-let configPath = getAppDir() / "config.ini"
+when defined(posix) or defined(linux):
+  import loggingPosix
+  var syslogLog = newSyslogLogger(
+    fmtStr = "$levelname: "
+  )
+  addHandler(syslogLog)
+
+else:
+  var logfile = getAppDir() / "downloadGrist.log"
+  open(logfile, fmWrite).close() # create the logfile
+  var rollingLog = newRollingFileLogger(
+    logfile,
+    fmtStr = "[$time] - $levelname: ",
+    mode = fmReadWriteExisting
+  )  
+  addHandler(rollingLog)
+
+let configPath = getConfigDir() / "downloadGrist.ini"
 
 if not fileExists(configPath):
-  warn "config.ini is missing, i'll create it for you! Quitting."
+  warn "config.ini is missing, i'll create it for you! (" & configPath & ") Quitting."
   writeFile(configPath, defaultConfigFile)
   quit(1)
 
-var config = loadConfig(getAppDir() / "config.ini")
+var config = loadConfig(configPath)
 # echo config
 
 var grist = newGristApi(
@@ -85,7 +96,37 @@ if config.getSectionValue("downloads", "downloadXLSX").parseBool():
 
 if config.getSectionValue("downloads", "downloadCSV").parseBool():
   let format = config.getSectionValue("format", "formatCSV")
-  for csvtable in config["csvtables"].keys():
+
+  # If the csvtables contains a wildcard, we have to first
+  # download a list of all tables, then match on them.
+
+  let anyHasGlob = toSeq(config["csvtables"].keys()).any(
+    proc (x: string): bool =
+      x.hasMagic()
+  )
+
+  var csvsToDownload: HashSet[string]
+  if anyHasGlob:
+    # At least one entry is a glob, get the table list.
+    var tableNames = grist.listTableNames()
+    for matcherStr in config["csvtables"].keys():
+      if not matcherStr.hasMagic():
+        # Not a glob, just add it
+        csvsToDownload.incl matcherStr
+      else:
+        # A glob, look through all tableName if the given glob matches.
+        let pattern = glob(matcherStr)
+        for tableName in tableNames:
+          if tableName.matches(pattern):
+            csvsToDownload.incl(tableName)
+  else:
+    # No entry is a glob, just add
+    for matcherStr in config["csvtables"].keys():
+      csvsToDownload.incl matcherStr
+
+
+
+  for csvtable in csvsToDownload:
     info format("Download csv table: '{{csvtable}}'", {"csvtable": csvtable})
     try:
       replacer["csvtable"] = csvtable

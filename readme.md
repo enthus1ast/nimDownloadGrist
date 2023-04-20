@@ -1,7 +1,49 @@
-This is a small stand alone tool to download
+% downloadGrist(1)
+% David Krause (enthus1ast) <krause@biochem2.uni-frankfurt.de>
+% April 2023
+
+
+# hAME
+
+**downloadGrist** - a small stand alone tool to download
 documents from grist for periodically backup purpose.
 
-Change the config.ini accordingly:
+# SYNOPSIS
+
+```
+downloadGrist
+```
+
+
+# DESCRIPTION
+
+**downloadGrist** can download grist documents in all available
+formats:
+
+- sqlite (.grist)
+- xlsx
+- csv
+
+A timestamp is added to the files, so the tool can be run repeatedly,
+to create snapshots of your grist documents.
+
+
+# CONFIGURATION
+
+The configuration files are stored in the users
+`.config/downloadGrist/` dir on linux.
+
+One can create multiple config files, they must end with `.ini`
+
+so for example:
+
+- `.config/downloadGrist/foo.ini`
+- `.config/downloadGrist/baa.ini`
+
+all of these config files are evaluated when **downloadGrist** runs.
+ 
+
+Change or create the config files accordingly:
 
 ```ini
 [common]
@@ -16,7 +58,6 @@ documentName = "myDocumentName"
 # Please note: a windows path must be written in triple quotes:
 #  """C:\myBackupDir"""
 downloadDir = backups
-
 
 [downloads]
 downloadXLSX = true
@@ -45,20 +86,30 @@ Table1
 Table2
 ```
 
-then run the downloadGrist executable.
+
+then run the **downloadGrist** executable.
+
 The downloaded files will have a timestamp,
 so its safe to run the tool over and over again.
 
 
-Changelog
----------
-UPCOMING
----
+## Changelog
+
+
+### UPCOMING
+
 - v?.?.?
+  - Experimental .deb package.
 
 
-DONE
-----
+### DONE
+- v0.4.0
+  - Config dir instead of config file, to allow multiple
+    configured downloads.
+    default on linux (posix) is ~/.config/downloadGrist/*.ini
+  - On linux (posix) log to syslog instead of logfile.
+  - The config is in the users config dir now.
+  - Display the name of the document in the logs
 - v0.3.2
   - fix nimble zigcc package
   - fix nimble build -> renamed
@@ -78,8 +129,11 @@ DONE
     - arm
     - arm-linux-gnueabi
     - arm-linux-gnueabihf
-
-
 - v0.2.1 added csvtable readme
 - v0.2.0 custom file name formatting.
 - v0.1.0 Init
+
+
+# CODE 
+
+The source is available on github: https://github.com/enthus1ast/nimDownloadGrist

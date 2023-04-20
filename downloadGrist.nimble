@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.3.3"
+version       = "0.4.0"
 author        = "David Krause"
 description   = "Tool to backup grist documents"
 license       = "MIT"
@@ -23,6 +23,10 @@ let crossCompileWithZig = """nim c -d:release -d:VERSION={{version}} --cpu:{{cpu
 
 task win, "build for windows (default compiler)":
   exec "nim c -d:release --opt:speed --gc:arc -d:lto --passl:-s --out=releases/downloadGrist src/downloadGrist.nim"
+
+task lin, "build for linux (default compiler)":
+  #exec "nim c -d:release --opt:speed --gc:arc -d:lto --passl:-s --out=releases/downloadGrist src/downloadGrist.nim"
+  exec "nim c -d:release --opt:speed  --passl:-s --out=releases/downloadGrist src/downloadGrist.nim"
 
 # task crossfreebsd, "build from windows for linux (zig)":
 task crosswindows, "build from windows for windows (zig)":

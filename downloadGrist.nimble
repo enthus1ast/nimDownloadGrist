@@ -74,3 +74,27 @@ task release, "build for all supported targets":
 #     let cmd = format(crossCompileWithZig, {"target": target, "os": "MacOSX", "cpu": "arm64"})
 #     echo cmd
 #     exec cmd
+#
+#
+
+
+task debian, "builds a debian package":
+
+  
+  cpFile("downloadGrist", "debian/usr/bin/downloadGrist") # Copy first
+
+  # build man page from readme (requires pandoc)
+  var pandocPath =  findExe("pandoc")
+  if pandocPath.len > 0:
+    #echo "pandoc readme.md -s -t man | /usr/bin/man -l -"
+    let mancmd = "pandoc readme.md -s -t man | gzip > ./debian/usr/share/man/man1/downloadgrist.1.gz"
+    echo mancmd
+    exec mancmd
+  else:
+    echo "Could not build manpage, pandoc is missing."
+
+  let cmd = format("dpkg-deb --build debian/  gristDownload_{{version}}_amd64.deb", {"version": version})
+  echo cmd
+  exec cmd
+
+  # Create example config to copy paste

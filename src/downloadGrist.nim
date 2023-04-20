@@ -8,10 +8,6 @@ import sets
 
 const VERSION {.strdefine.} = "-1"
 
-func changeToPlatformNewlines(str: string): string =
-  for line in str.splitLines():
-    result.add line & "\p"
-
 var consoleLog = newConsoleLogger(fmtStr="[$time] - $levelname: ")
 addHandler(consoleLog)
 
@@ -128,7 +124,6 @@ proc downloadWithConfig(configPath: string) =
           "msg": getCurrentExceptionMsg(),
           "csvtable": csvtable
         })
-
 
 
 let configPath = getConfigDir() / "downloadGrist.ini"

@@ -12,9 +12,6 @@ func changeToPlatformNewlines(str: string): string =
   for line in str.splitLines():
     result.add line & "\p"
 
-const defaultConfigFile = staticRead("config.ini.in").changeToPlatformNewlines()
-
-
 var consoleLog = newConsoleLogger(fmtStr="[$time] - $levelname: ")
 addHandler(consoleLog)
 
@@ -39,8 +36,6 @@ else:
 proc downloadWithConfig(configPath: string) =
 
   var config = loadConfig(configPath)
-  # echo config
-
   var grist = newGristApi(
     server = config.getSectionValue("common", "server"),
     docId = config.getSectionValue("common", "docId"),
@@ -138,11 +133,6 @@ proc downloadWithConfig(configPath: string) =
 
 let configPath = getConfigDir() / "downloadGrist.ini"
 let configDir = getConfigDir() / "downloadGrist"
-
-# if not fileExists(configPath):
-#   warn "config.ini is missing, i'll create it for you! (" & configPath & ") Quitting."
-#   writeFile(configPath, defaultConfigFile)
-#   quit(1)
 
 if not dirExists(configDir):
   warn fmt"configdir ({configDir}) is missing, i'll create it for you! Quitting."

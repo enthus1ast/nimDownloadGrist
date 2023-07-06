@@ -30,13 +30,24 @@ to create snapshots of your grist documents.
 
 # CONFIGURATION
 
+(Since version 0.4.0) downloadGrist supports config dirs.
+So there are three locations where the config is read from.
+
+1. From the old file `config.ini` next to the executable (old 0.3 behavior)
+2. From the old file `downloadGrist.ini` in the OS's config folder (appdata or .~/.config)
+3. From all configs in the `downloadGrist/*.ini`  folder.
+
 The configuration files are stored in the users
 `.config/downloadGrist/` dir on linux.
+
+And in `%APPDATA%\downloadGrist\` on windows.
 
 One can create multiple config files, they must end with `.ini`
 
 so for example:
 
+- `Downloads/downloadGrist/config.ini"
+- `.config/downloadGrist.ini` 
 - `.config/downloadGrist/foo.ini`
 - `.config/downloadGrist/baa.ini`
 

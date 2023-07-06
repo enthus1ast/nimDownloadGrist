@@ -126,6 +126,7 @@ proc downloadWithConfig(configPath: string) =
         })
 
 
+let configPathNextToExecutable = getAppDir() / "config.ini" # this is the old behavior from 0.3
 let configPath = getConfigDir() / "downloadGrist.ini"
 let configDir = getConfigDir() / "downloadGrist"
 
@@ -133,6 +134,12 @@ if not dirExists(configDir):
   warn fmt"configdir ({configDir}) is missing, i'll create it for you! Quitting."
   createDir(configDir)
   quit(1)
+
+# Run the config from the single config file next to the executable
+# old behavior from 0.3
+if fileExists(configPathNextToExecutable):
+  info fmt"Config: {configPath}"
+  downloadWithConfig(configPathNextToExecutable)
 
 # Run the config from the single config file
 if fileExists(configPath):

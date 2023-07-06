@@ -1,0 +1,10 @@
+Package: downloadGrist
+Version: 0.4.0
+Section: custom
+Priority: optional
+Architecture: amd64
+Essential: no
+Installed-Size: 584
+Maintainer: David Krause <krause@biochem2.uni-frankfurt.de>
+Homepage: https://github.com/enthus1ast/nimDownloadGrist
+Description: download grist documents in all formats for backup.

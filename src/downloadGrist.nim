@@ -25,7 +25,7 @@ else:
     logfile,
     fmtStr = "[$time] - $levelname: ",
     mode = fmReadWriteExisting
-  )  
+  )
   addHandler(rollingLog)
 
 
@@ -42,7 +42,7 @@ proc downloadWithConfig(configPath: string) =
   info(
     format("Version: {{version}} Server: '{{server}}' name: '{{documentName}}' docId: '{{docId}}' apiKey: '{{apiKey}}'", {
       "server": $grist.server,
-      "documentName": documentName, 
+      "documentName": documentName,
       "docId": $grist.docId,
       "apiKey": $grist.apiKey,
       "version": VERSION

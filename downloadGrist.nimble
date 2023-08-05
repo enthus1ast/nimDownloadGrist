@@ -16,6 +16,7 @@ requires "https://github.com/enthus1ast/formatja"
 requires "zigcc"
 requires "glob"
 requires "loggingPosix"
+requires "sim"
 
 import formatja
 
@@ -86,10 +87,18 @@ task debian, "builds a debian package":
   # build man page from readme (requires pandoc)
   var pandocPath =  findExe("pandoc")
   if pandocPath.len > 0:
-    #echo "pandoc readme.md -s -t man | /usr/bin/man -l -"
-    let mancmd = "pandoc readme.md -s -t man | gzip > ./debian/usr/share/man/man1/downloadgrist.1.gz"
-    echo mancmd
-    exec mancmd
+    block:
+      echo "Generate readme.md"
+      let mancmd = "pandoc readme.md.in -s -t markdown > ./readme.md"
+      echo mancmd
+      exec mancmd
+
+    block:
+      #echo "pandoc readme.md -s -t man | /usr/bin/man -l -"
+      echo "Generate linux manpage"
+      let mancmd = "pandoc readme.md.in -s -t man | gzip > ./debian/usr/share/man/man1/downloadgrist.1.gz"
+      echo mancmd
+      exec mancmd
   else:
     echo "Could not build manpage, pandoc is missing."
 

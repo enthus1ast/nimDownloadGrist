@@ -5,8 +5,29 @@ import formatja
 import glob
 import std/logging
 import sets
+import sim2
 
 const VERSION {.strdefine.} = "-1"
+
+type
+  Common = object
+    server: string
+    docId: string
+    apiKey: string
+    documentName: string
+    downloadDir {.defaultValue: "backups".}: string
+  Downloads = object
+    downloadXLSX {.defaultValue: false.}: bool
+    downloadSQLITE {.defaultValue: false.}: bool
+    downloadCSV {.defaultValue: false.}: bool
+  Format = object
+    formatSQLITE {.defaultValue: "{{documentName}}__{{dateStr}}.sqlite".}: string
+    formatXLSX {.defaultValue: "{{documentName}}__{{dateStr}}.xlsx".} : string
+    formatCSV {.defaultValue: "{{documentName}}-{{csvtable}}__{{dateStr}}.csv".}: string
+  Cfg = object
+    common: Common
+    downloads: Downloads
+    format: Format
 
 var consoleLog = newConsoleLogger(fmtStr="[$time] - $levelname: ")
 addHandler(consoleLog)
@@ -30,14 +51,14 @@ else:
 
 
 proc downloadWithConfig(configPath: string) =
-
   var config = loadConfig(configPath)
+  var cfg = loadObject[Cfg](config, useSnakeCase = false)
   var grist = newGristApi(
-    server = config.getSectionValue("common", "server"),
-    docId = config.getSectionValue("common", "docId"),
-    apiKey = config.getSectionValue("common", "apiKey"),
+    server = cfg.common.server,
+    docId = cfg.common.docid,
+    apiKey = cfg.common.apiKey
   )
-  let documentName = config.getSectionValue("common", "documentName")
+  let documentName = cfg.common.documentName
 
   info(
     format("Version: {{version}} Server: '{{server}}' name: '{{documentName}}' docId: '{{docId}}' apiKey: '{{apiKey}}'", {
@@ -53,38 +74,37 @@ proc downloadWithConfig(configPath: string) =
     quit(1)
 
   var replacer: Replacer = {
-    "documentName": config.getSectionValue("common", "documentName"),
+    "documentName": cfg.common.documentName,
     "dateStr": ($now()).replace(":", "-")
   }.toTable
 
-  let downloadDirConfig = config.getSectionValue("common", "downloadDir")
+  let downloadDirConfig = cfg.common.downloadDir
   let downloadDir =
     if downloadDirConfig.isAbsolute(): downloadDirConfig
     else: getAppDir() / downloadDirConfig
   if not dirExists(downloadDir):
     createDir(downloadDir)
 
-  if config.getSectionValue("downloads", "downloadSQLITE").parseBool():
+  if cfg.downloads.downloadSQLITE:
     info "Download sqlite"
     try:
       let dataSqlite = grist.downloadSQLITE()
-      let format = config.getSectionValue("format", "formatSQLITE")
+      let format = cfg.format.formatSQLITE
       writeFile(downloadDir / format(format, replacer), dataSqlite)
     except:
       error format("Could not download sqlite: '{{msg}}'", {"msg": getCurrentExceptionMsg()})
 
-  if config.getSectionValue("downloads", "downloadXLSX").parseBool():
+  if cfg.downloads.downloadXLSX:
     info "Download xlsx"
     try:
       let dataXLSX = grist.downloadXLSX()
-      let format = config.getSectionValue("format", "formatXLSX")
+      let format = cfg.format.formatXLSX
       writeFile(downloadDir / format(format, replacer), dataXLSX)
     except:
       error format("Could not download xlsx: '{{msg}}'", {"msg": getCurrentExceptionMsg()})
 
-
-  if config.getSectionValue("downloads", "downloadCSV").parseBool():
-    let format = config.getSectionValue("format", "formatCSV")
+  if cfg.downloads.downloadCSV:
+    let format = cfg.format.formatCSV
 
     # If the csvtables contains a wildcard, we have to first
     # download a list of all tables, then match on them.
